@@ -1,0 +1,1 @@
+{\n  \"extends\": \"./tsconfig.json\",\n  \"compilerOptions\": {\n    \"rootDir\": \"src\",\n    \"types\": [\"node\"]\n  },\n  \"include\": [\"src/**/*.ts\"],\n  \"exclude\": [\"tests\", \"dist\", \"scripts\"]\n}
