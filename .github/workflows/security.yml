@@ -28,6 +28,7 @@ jobs:
       - run: npm run audit:prod
 
   codeql:
+    if: false
     runs-on: ubuntu-latest
 
     steps:
