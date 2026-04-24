@@ -29,7 +29,8 @@ jobs:
 
   codeql:
     runs-on: ubuntu-latest
-
+    # Disabled: code scanning requires GHAS (private repo) or a public repo
+    if: false
     steps:
       - uses: actions/checkout@v5
       - uses: github/codeql-action/init@v4
