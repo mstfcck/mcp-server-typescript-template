@@ -29,11 +29,15 @@ const definitionContent = `import { z } from "zod";
 
 export const ${toolIdentifier}ToolInputSchema = {
   input: z.string().min(1).describe("Primary input for the ${toolName} tool.")
-};
+} as const;
+
+export const ${toolIdentifier}ToolInputValidator = z.object(${toolIdentifier}ToolInputSchema);
 
 export const ${toolIdentifier}ToolOutputSchema = {
   result: z.string().describe("Structured result returned by the ${toolName} tool.")
-};
+} as const;
+
+export const ${toolIdentifier}ToolOutputValidator = z.object(${toolIdentifier}ToolOutputSchema);
 
 export const ${toolIdentifier}ToolDefinition = {
   name: "${toolName}",
@@ -50,19 +54,17 @@ export const ${toolIdentifier}ToolDefinition = {
 } as const;
 `;
 
-const handlerContent = `import { z } from "zod";
-import type { ToolResponse } from "../../types/index.js";
+const handlerContent = `import type { ToolResponse } from "../../types/index.js";
 import { jsonResponse } from "../../lib/response.js";
-import { ${toolIdentifier}ToolInputSchema } from "./definition.js";
+import {
+  ${toolIdentifier}ToolInputValidator,
+  ${toolIdentifier}ToolOutputValidator
+} from "./definition.js";
 
-const schema = z.object(${toolIdentifier}ToolInputSchema);
-
-export async function ${toolIdentifier}ToolHandler(input: unknown): Promise<ToolResponse> {
-  const { input: value } = schema.parse(input);
-
-  return jsonResponse({
-    result: value
-  });
+export function ${toolIdentifier}ToolHandler(input: unknown): ToolResponse {
+  const { input: value } = ${toolIdentifier}ToolInputValidator.parse(input);
+  const output = ${toolIdentifier}ToolOutputValidator.parse({ result: value });
+  return jsonResponse(output);
 }
 `;
 

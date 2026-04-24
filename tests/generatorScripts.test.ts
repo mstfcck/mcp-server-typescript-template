@@ -39,10 +39,34 @@ describe("generator scripts", () => {
 
     runScript(toolScriptPath, ["alpha-tool"], workspace);
     const handlerPath = path.join(workspace, "src/tools/alpha-tool/handler.ts");
+    const definitionPath = path.join(
+      workspace,
+      "src/tools/alpha-tool/definition.ts"
+    );
     expect(readWorkspaceFile(workspace, "src/tools/index.ts")).toContain(
       'import { alphaToolDefinition } from "./alpha-tool/definition.js";'
     );
     expect(fs.readFileSync(handlerPath, "utf8")).toContain("alphaToolHandler");
+    // Generated handler must be synchronous to match canonical pattern
+    expect(fs.readFileSync(handlerPath, "utf8")).not.toContain(
+      "async function"
+    );
+    expect(fs.readFileSync(handlerPath, "utf8")).toContain(
+      "alphaToolInputValidator.parse("
+    );
+    expect(fs.readFileSync(handlerPath, "utf8")).toContain(
+      "alphaToolOutputValidator.parse("
+    );
+    // Generated definition must match canonical pattern: schemas with as const + validators
+    const generatedDefinition = fs.readFileSync(definitionPath, "utf8");
+    expect(generatedDefinition).toContain("alphaToolInputSchema = {");
+    expect(generatedDefinition).toContain("} as const;");
+    expect(generatedDefinition).toContain(
+      "alphaToolInputValidator = z.object("
+    );
+    expect(generatedDefinition).toContain(
+      "alphaToolOutputValidator = z.object("
+    );
 
     fs.writeFileSync(handlerPath, "sentinel\n");
     runScript(toolScriptPath, ["alpha-tool"], workspace);

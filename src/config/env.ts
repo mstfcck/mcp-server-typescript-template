@@ -1,16 +1,38 @@
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 import dotenv from "dotenv";
 import { z } from "zod";
-import type { AppConfig } from "../types/index.js";
+import type { AppConfig, PinoLogLevel } from "../types/index.js";
 
 dotenv.config();
+
+// Read name and version from package.json so they stay in sync automatically.
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+const packageJsonSchema = z.object({ name: z.string(), version: z.string() });
+const rawPkg = JSON.parse(
+  readFileSync(join(__dirname, "../../package.json"), "utf-8")
+) as unknown;
+const pkg = packageJsonSchema.parse(rawPkg);
 
 const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "test", "production"])
     .default("development"),
-  LOG_LEVEL: z.string().default("info"),
-  MCP_SERVER_NAME: z.string().min(1).default("mcp-server-typescript-template"),
-  MCP_SERVER_VERSION: z.string().min(1).default("0.1.0"),
+  LOG_LEVEL: z
+    .enum([
+      "trace",
+      "debug",
+      "info",
+      "warn",
+      "error",
+      "fatal",
+      "silent"
+    ] as const)
+    .default("info") satisfies z.ZodType<PinoLogLevel>,
+  MCP_SERVER_NAME: z.string().min(1).default(pkg.name),
+  MCP_SERVER_VERSION: z.string().min(1).default(pkg.version),
   MCP_TRANSPORT: z.enum(["stdio", "streamable-http"]).default("stdio"),
   HOST: z.string().min(1).default("127.0.0.1"),
   PORT: z.coerce.number().int().positive().default(3000),

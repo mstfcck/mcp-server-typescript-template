@@ -24,7 +24,7 @@ export function registerServerFeatures(server: McpServer): void {
         description: resource.description,
         mimeType: resource.mimeType
       },
-      async () => ({
+      () => ({
         contents: [
           {
             uri: resource.uri,
@@ -39,13 +39,13 @@ export function registerServerFeatures(server: McpServer): void {
   for (const resource of templateResources) {
     server.registerResource(
       resource.name,
-      resource.template as Parameters<typeof server.registerResource>[1],
+      resource.template,
       {
         title: resource.title,
         description: resource.description,
         mimeType: resource.mimeType
       },
-      resource.read as unknown as Parameters<typeof server.registerResource>[3]
+      (uri, variables) => resource.read(uri, variables)
     );
   }
 
@@ -57,8 +57,8 @@ export function registerServerFeatures(server: McpServer): void {
         description: prompt.description,
         argsSchema: prompt.argsSchema
       },
-      async (arguments_: unknown) => ({
-        messages: prompt.messages(arguments_ as never)
+      (arguments_: unknown) => ({
+        messages: prompt.messages(arguments_)
       })
     );
   }

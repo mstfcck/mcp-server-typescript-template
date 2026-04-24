@@ -45,7 +45,7 @@ describe("streamable HTTP transport", () => {
       version: "1.0.0"
     });
     transport = new StreamableHTTPClientTransport(
-      new URL(`http://127.0.0.1:${address.port}/mcp`)
+      new URL(`http://127.0.0.1:${String(address.port)}/mcp`)
     );
 
     await client.connect(transport as Parameters<typeof client.connect>[0]);
@@ -81,22 +81,24 @@ describe("streamable HTTP transport", () => {
     expect(result.isError).not.toBe(true);
   });
 
-  it("rejects GET requests on the MCP endpoint when no standalone SSE stream is exposed", async () => {
+  it("rejects GET requests on the MCP endpoint when no mcp-session-id header is present", async () => {
     const app = createStreamableHttpApp();
 
     server = app.listen(0, "127.0.0.1");
     await once(server, "listening");
 
     const address = server.address() as AddressInfo;
-    const response = await fetch(`http://127.0.0.1:${address.port}/mcp`);
+    const response = await fetch(
+      `http://127.0.0.1:${String(address.port)}/mcp`
+    );
     const body = (await response.json()) as {
       error: {
         message: string;
       };
     };
 
-    expect(response.status).toBe(405);
-    expect(body.error.message).toBe("Method not allowed.");
+    expect(response.status).toBe(400);
+    expect(body.error.message).toBe("Missing mcp-session-id header.");
   });
 
   it("exposes a health endpoint for container orchestration", async () => {
@@ -106,7 +108,9 @@ describe("streamable HTTP transport", () => {
     await once(server, "listening");
 
     const address = server.address() as AddressInfo;
-    const response = await fetch(`http://127.0.0.1:${address.port}/healthz`);
+    const response = await fetch(
+      `http://127.0.0.1:${String(address.port)}/healthz`
+    );
     const body = (await response.json()) as {
       status: string;
       transport: string;
@@ -131,7 +135,7 @@ describe("streamable HTTP transport", () => {
       version: "1.0.0"
     });
     transport = new StreamableHTTPClientTransport(
-      new URL(`http://127.0.0.1:${address.port}/mcp`)
+      new URL(`http://127.0.0.1:${String(address.port)}/mcp`)
     );
 
     await client.connect(transport as Parameters<typeof client.connect>[0]);

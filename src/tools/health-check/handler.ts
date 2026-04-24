@@ -1,9 +1,11 @@
 import type { ToolResponse } from "../../types/index.js";
 import { jsonResponse } from "../../lib/response.js";
+import { healthCheckToolOutputValidator } from "./definition.js";
 
-export async function healthCheckToolHandler(): Promise<ToolResponse> {
-  return jsonResponse({
+export function healthCheckToolHandler(): ToolResponse {
+  const output = healthCheckToolOutputValidator.parse({
     status: "ok",
     timestamp: new Date().toISOString()
   });
+  return jsonResponse(output);
 }

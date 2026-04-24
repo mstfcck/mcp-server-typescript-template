@@ -86,8 +86,8 @@ export const templateResources = [
       list: undefined
     }),
     mimeType: "text/markdown",
-    read: async (uri: URL, params: { topic: string }) => {
-      const topic = guideTopicSchema.parse(params.topic);
+    read: (uri: URL, params: Record<string, string | string[]>) => {
+      const topic = guideTopicSchema.parse(params["topic"]);
 
       return {
         contents: [

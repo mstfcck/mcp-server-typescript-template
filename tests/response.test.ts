@@ -14,16 +14,14 @@ describe("response helpers", () => {
 
   it("creates json response", () => {
     expect(jsonResponse({ ok: true })).toEqual({
-      content: [{ type: "text", text: JSON.stringify({ ok: true }, null, 2) }],
+      content: [{ type: "text", text: JSON.stringify({ ok: true }) }],
       structuredContent: { ok: true }
     });
   });
 
   it("creates error responses with MCP error semantics", () => {
     expect(errorResponse("boom")).toEqual({
-      content: [
-        { type: "text", text: JSON.stringify({ error: "boom" }, null, 2) }
-      ],
+      content: [{ type: "text", text: JSON.stringify({ error: "boom" }) }],
       structuredContent: { error: "boom" },
       isError: true
     });
