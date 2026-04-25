@@ -169,7 +169,6 @@ export function createStreamableHttpApp(): Express {
 
   app.use(
     helmet({
-      contentSecurityPolicy: false,
       crossOriginEmbedderPolicy: false
     })
   );
