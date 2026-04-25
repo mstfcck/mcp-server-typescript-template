@@ -1,3 +1,4 @@
+import type { PromptRegistration } from "../server/registrationTypes.js";
 import { z } from "zod";
 
 const summarizeServerArgsSchema = {
@@ -23,7 +24,7 @@ const draftToolSpecArgsSchema = {
 
 const draftToolSpecArgsValidator = z.object(draftToolSpecArgsSchema);
 
-export const examplePrompts = [
+export const examplePrompts: readonly PromptRegistration[] = [
   {
     name: "summarize_server",
     title: "Summarize Server",

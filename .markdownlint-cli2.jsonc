@@ -7,7 +7,7 @@
     "**/*.md",
     ".changeset/**/*.md",
     ".github/**/*.md",
-    "!node_modules/**",
-    "!dist/**"
+    "!**/node_modules/**",
+    "!**/dist/**"
   ]
 }

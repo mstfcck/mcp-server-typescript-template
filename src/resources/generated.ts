@@ -1,3 +1,10 @@
-export const generatedStaticResources = [] as const;
+import type {
+  StaticResourceRegistration,
+  TemplateResourceRegistration
+} from "../server/registrationTypes.js";
 
-export const generatedTemplateResources = [] as const;
+export const generatedStaticResources: readonly StaticResourceRegistration[] =
+  [];
+
+export const generatedTemplateResources: readonly TemplateResourceRegistration[] =
+  [];

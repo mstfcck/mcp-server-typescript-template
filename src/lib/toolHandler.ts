@@ -1,24 +1,29 @@
+import type { ToolCallback } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { logger } from "../config/logger.js";
+import type { ToolInputSchema } from "../server/registrationTypes.js";
 import type { ToolResponse } from "../types/index.js";
 import { toErrorMessage } from "./errors.js";
 import { errorResponse } from "./response.js";
 
-type MaybePromise<T> = T | Promise<T>;
+export type ToolHandler<
+  TInputSchema extends ToolInputSchema = ToolInputSchema
+> = ToolCallback<TInputSchema>;
 
-export type ToolHandler<TInput = unknown, TExtra = unknown> = (
-  input: TInput,
-  extra: TExtra
-) => MaybePromise<ToolResponse>;
+export function withToolErrorHandling<
+  TInputSchema extends ToolInputSchema = ToolInputSchema
+>(handler: ToolHandler<TInputSchema>): ToolHandler<TInputSchema> {
+  const invoke = handler as (
+    ...args: Parameters<ToolHandler<TInputSchema>>
+  ) => Promise<ToolResponse> | ToolResponse;
 
-export function withToolErrorHandling<TInput = unknown, TExtra = unknown>(
-  handler: ToolHandler<TInput, TExtra>
-): ToolHandler<TInput, TExtra> {
-  return async (input: TInput, extra: TExtra): Promise<ToolResponse> => {
+  return (async (
+    ...args: Parameters<ToolHandler<TInputSchema>>
+  ): Promise<ToolResponse> => {
     try {
-      return await handler(input, extra);
+      return await invoke(...args);
     } catch (error: unknown) {
       logger.warn({ error }, "Tool handler failed");
       return errorResponse(toErrorMessage(error));
     }
-  };
+  }) as ToolHandler<TInputSchema>;
 }
