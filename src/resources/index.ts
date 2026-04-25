@@ -1,4 +1,8 @@
 import {
+  createStaticResourceRegistration,
+  createTemplateResourceRegistration
+} from "../server/registrationHelpers.js";
+import {
   generatedStaticResources,
   generatedTemplateResources
 } from "./generated.js";
@@ -10,9 +14,9 @@ import {
 export const staticResources = [
   ...builtInStaticResources,
   ...generatedStaticResources
-] as const;
+].map(createStaticResourceRegistration);
 
 export const templateResources = [
   ...builtInTemplateResources,
   ...generatedTemplateResources
-] as const;
+].map(createTemplateResourceRegistration);

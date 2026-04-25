@@ -1,4 +1,8 @@
 import { ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type {
+  StaticResourceRegistration,
+  TemplateResourceRegistration
+} from "../server/registrationTypes.js";
 import { z } from "zod";
 
 const guideTopicSchema = z.enum([
@@ -39,7 +43,7 @@ const guideTextByTopic = {
   ].join("\n")
 } as const;
 
-export const staticResources = [
+export const staticResources: readonly StaticResourceRegistration[] = [
   {
     uri: "resource://server/about",
     name: "server_about",
@@ -77,7 +81,7 @@ export const staticResources = [
   }
 ] as const;
 
-export const templateResources = [
+export const templateResources: readonly TemplateResourceRegistration[] = [
   {
     name: "server_guide",
     title: "Server Guide",
